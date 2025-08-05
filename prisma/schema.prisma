@@ -1,0 +1,109 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  name String
+  email String @unique
+  password String
+  phone String
+  role Role @default(STUDENT)
+  active Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model School {
+  id Int @id @default(autoincrement())
+  name String
+  cpnj String @unique
+  email String @unique
+  phone String
+  address Address @relation(fields: [addressId], references: [id])
+  addressId Int @unique
+  directorName String?
+  active Boolean @default(true)
+}
+
+model Address {
+  id Int @id @default(autoincrement())
+  street String
+  number String
+  complement String?
+  neighborhood String
+  city String
+  state String
+  zipCode String
+  school School?
+}
+
+model Student {
+  id Int @id @default(autoincrement())
+  registrationNumber Int @unique
+  birthDate DateTime
+  parentName String
+  parentPhone String
+  parentEmail String?
+  enrollmentDate DateTime @default(now())
+  active Boolean @default(true)
+}
+
+model Teacher {
+  id Int @id @default(autoincrement())
+  hireDate DateTime @default(now())
+  salary Decimal
+  specialization String
+  active Boolean @default(true)
+}
+
+model Class {
+  id Int @id @default(autoincrement())
+  name String
+  year String
+  semester Int
+  maxStudents Int
+  active Boolean @default(true)
+}
+
+model Subject {
+  id Int @id @default(autoincrement())
+  name String
+  code String @unique
+  description String?
+  workloadHours Int
+  credits Decimal
+}
+
+model Grade {
+  id Int @id @default(autoincrement())
+  gradeValue Decimal
+  maxGrade Decimal
+  weight Decimal
+  examDate DateTime
+  type Type @default(PROVA)
+}
+
+
+enum Role {
+  ADMIN
+  TEACHER
+  STUDENT
+}
+
+enum Type {
+  PROVA
+  TRABALHO
+}
